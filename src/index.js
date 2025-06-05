@@ -7,7 +7,7 @@ const { logger } = require('./utils/logger');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -17,13 +17,14 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
 
-// Webhook endpoint
+// endpoint
 app.post('/webhook', (req, res) => {
   try {
     const webhookData = req.body;
     logger.info('Received webhook:', webhookData);
     
-    // TODO: Add your webhook processing logic here
+    // Send to Unity 3D app
+
     
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
@@ -32,7 +33,7 @@ app.post('/webhook', (req, res) => {
   }
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
   logger.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
