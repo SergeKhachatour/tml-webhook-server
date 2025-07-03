@@ -23,7 +23,7 @@ app.post('/webhook', (req, res) => {
     const webhookData = req.body;
     logger.info('Received webhook:', webhookData);
     
-    // Send to Unity 3D app
+    // Send to Unity 3D application
 
     
     res.status(200).json({ message: 'Webhook received successfully' });
