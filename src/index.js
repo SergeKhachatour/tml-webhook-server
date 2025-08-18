@@ -22,25 +22,33 @@ app.get('/health', (req, res) => {
 app.post('/webhook', (req, res) => {
   try {
     // Log raw headers
-    logger.info('=== WEBHOOK REQUEST HEADERS ===');
-    logger.info('Headers:', JSON.stringify(req.headers, null, 2));
+    logger.info({
+      message: '=== WEBHOOK REQUEST HEADERS ===',
+      headers: req.headers
+    });
     
     // Log raw body
-    logger.info('=== WEBHOOK REQUEST BODY ===');
-    logger.info('Raw body:', JSON.stringify(req.body, null, 2));
+    logger.info({
+      message: '=== WEBHOOK REQUEST BODY ===',
+      body: req.body
+    });
     
     // Log additional request details
-    logger.info('=== WEBHOOK REQUEST DETAILS ===');
-    logger.info('Method:', req.method);
-    logger.info('URL:', req.url);
-    logger.info('IP Address:', req.ip);
-    logger.info('User Agent:', req.get('User-Agent'));
-    logger.info('Content-Type:', req.get('Content-Type'));
-    logger.info('Content-Length:', req.get('Content-Length'));
+    logger.info({
+      message: '=== WEBHOOK REQUEST DETAILS ===',
+      method: req.method,
+      url: req.url,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      contentType: req.get('Content-Type'),
+      contentLength: req.get('Content-Length')
+    });
     
     const webhookData = req.body;
-    logger.info('=== PROCESSED WEBHOOK DATA ===');
-    logger.info('Processed webhook data:', webhookData);
+    logger.info({
+      message: '=== PROCESSED WEBHOOK DATA ===',
+      webhookData: webhookData
+    });
     
     // Send to Unity 3D application
 
