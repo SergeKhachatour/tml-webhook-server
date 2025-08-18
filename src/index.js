@@ -14,6 +14,7 @@ app.use(express.json());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  logger.info('=== HEALTH CHECK ===');
   res.status(200).json({ status: 'healthy xxx' });
 });
 
