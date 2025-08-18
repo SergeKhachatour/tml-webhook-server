@@ -20,8 +20,26 @@ app.get('/health', (req, res) => {
 // endpoint
 app.post('/webhook', (req, res) => {
   try {
+    // Log raw headers
+    logger.info('=== WEBHOOK REQUEST HEADERS ===');
+    logger.info('Headers:', JSON.stringify(req.headers, null, 2));
+    
+    // Log raw body
+    logger.info('=== WEBHOOK REQUEST BODY ===');
+    logger.info('Raw body:', JSON.stringify(req.body, null, 2));
+    
+    // Log additional request details
+    logger.info('=== WEBHOOK REQUEST DETAILS ===');
+    logger.info('Method:', req.method);
+    logger.info('URL:', req.url);
+    logger.info('IP Address:', req.ip);
+    logger.info('User Agent:', req.get('User-Agent'));
+    logger.info('Content-Type:', req.get('Content-Type'));
+    logger.info('Content-Length:', req.get('Content-Length'));
+    
     const webhookData = req.body;
-    logger.info('Received webhook:', webhookData);
+    logger.info('=== PROCESSED WEBHOOK DATA ===');
+    logger.info('Processed webhook data:', webhookData);
     
     // Send to Unity 3D application
 
