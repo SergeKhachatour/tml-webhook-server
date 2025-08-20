@@ -7,10 +7,26 @@ const { logger } = require('./utils/logger');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Log startup information
+logger.info('Starting TML Webhook Server...', {
+  nodeVersion: process.version,
+  port: port,
+  nodeEnv: process.env.NODE_ENV || 'development'
+});
+
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'TML Webhook Server is running',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -114,4 +130,18 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
+}).on('error', (err) => {
+  logger.error('Failed to start server:', err);
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully...');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully...');
+  process.exit(0);
 }); 
