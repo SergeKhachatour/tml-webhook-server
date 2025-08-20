@@ -45,14 +45,36 @@ app.get('/', (req, res) => {
   res.status(200).json({ 
     message: 'TML Webhook Server is running',
     version: '1.0.0',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
   });
+});
+
+// Simple ping endpoint for Azure
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   logger.info('=== HEALTH CHECK ===');
-  res.status(200).json({ status: 'healthy' });
+  res.status(200).json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
+
+// Azure Web App health check endpoint
+app.get('/api/health', (req, res) => {
+  logger.info('=== AZURE HEALTH CHECK ===');
+  res.status(200).json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
 });
 
 // endpoint
