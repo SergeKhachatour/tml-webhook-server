@@ -26,27 +26,6 @@ console.log('=== LOADING DEPENDENCIES ===');
 require('dotenv').config();
 console.log('=== dotenv loaded ===');
 
-// Initialize Application Insights for Azure logging (optional)
-let client = null;
-try {
-  const appInsights = require('applicationinsights');
-  appInsights.setup()
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .setUseDiskRetryCaching(true)
-    .start();
-
-  client = appInsights.defaultClient;
-  console.log('=== Application Insights initialized ===');
-} catch (error) {
-  console.log('=== Application Insights not available (continuing without it) ===');
-  console.log('Error:', error.message);
-}
-
 const express = require('express');
 console.log('=== express loaded ===');
 
@@ -72,7 +51,7 @@ function writeToFile(message) {
   }
 }
 
-// Azure-compatible logging function
+// Azure-compatible logging function (without Application Insights dependency)
 function azureLog(level, message, data = {}) {
   const timestamp = new Date().toISOString();
   const logEntry = {
@@ -93,19 +72,6 @@ function azureLog(level, message, data = {}) {
   // Write to stderr for errors (Azure captures this)
   if (level === 'error') {
     console.error(JSON.stringify(logEntry));
-  }
-  
-  // Send to Application Insights (only if available)
-  if (client && client.trackTrace) {
-    try {
-      if (level === 'error') {
-        client.trackException({ exception: new Error(message), properties: data });
-      } else {
-        client.trackTrace({ message: message, severity: level, properties: data });
-      }
-    } catch (error) {
-      console.log('Application Insights logging failed:', error.message);
-    }
   }
 }
 
@@ -145,7 +111,6 @@ logger.info('Starting TML Webhook Server...', {
   platform: process.platform,
   arch: process.arch
 });
-
 
 logger.info('Configuring middleware...');
 
@@ -268,12 +233,12 @@ app.get('/logs', (req, res) => {
       message: 'No log file found or error reading logs',
       error: error.message,
       timestamp: new Date().toISOString(),
-      note: 'This is a test deployment to resolve 409 conflict'
+      note: 'Application running without Application Insights dependency'
     });
   }
 });
 
-// endpoint
+// Webhook endpoint
 app.post('/webhook', (req, res) => {
   try {
     azureLog('info', 'WEBHOOK ENDPOINT CALLED', {
@@ -324,11 +289,6 @@ app.post('/webhook', (req, res) => {
       webhookData: webhookData
     });
 
-  
-    
-    // Send to Unity 3D application
-
-    
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
     azureLog('error', 'WEBHOOK ERROR', { error: error.message, stack: error.stack });
@@ -338,7 +298,7 @@ app.post('/webhook', (req, res) => {
   }
 });
 
-// endpoint
+// Asset Alert endpoint
 app.post('/AssetAlert', (req, res) => {
   try {
     azureLog('info', 'ASSET ALERT ENDPOINT CALLED', {
@@ -389,11 +349,6 @@ app.post('/AssetAlert', (req, res) => {
       webhookData: webhookData
     });
 
-  
-    
-    // Send to Unity 3D application
-
-    
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
     azureLog('error', 'ASSET ALERT ERROR', { error: error.message, stack: error.stack });
