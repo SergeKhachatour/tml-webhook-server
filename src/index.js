@@ -26,6 +26,21 @@ console.log('=== LOADING DEPENDENCIES ===');
 require('dotenv').config();
 console.log('=== dotenv loaded ===');
 
+// Initialize Application Insights for Azure logging
+const appInsights = require('applicationinsights');
+appInsights.setup()
+  .setAutoDependencyCorrelation(true)
+  .setAutoCollectRequests(true)
+  .setAutoCollectPerformance(true)
+  .setAutoCollectExceptions(true)
+  .setAutoCollectDependencies(true)
+  .setAutoCollectConsole(true)
+  .setUseDiskRetryCaching(true)
+  .start();
+
+const client = appInsights.defaultClient;
+console.log('=== Application Insights initialized ===');
+
 const express = require('express');
 console.log('=== express loaded ===');
 
@@ -72,6 +87,15 @@ function azureLog(level, message, data = {}) {
   // Write to stderr for errors (Azure captures this)
   if (level === 'error') {
     console.error(JSON.stringify(logEntry));
+  }
+  
+  // Send to Application Insights
+  if (client) {
+    if (level === 'error') {
+      client.trackException({ exception: new Error(message), properties: data });
+    } else {
+      client.trackTrace({ message: message, severity: level, properties: data });
+    }
   }
 }
 
