@@ -128,6 +128,13 @@ app.get('/ping', (req, res) => {
 app.get('/health', (req, res) => {
   console.log('=== HEALTH CHECK ===');
   logger.info('=== HEALTH CHECK ===');
+  
+  // Write to file as backup
+  writeToFile('HEALTH CHECK ENDPOINT CALLED');
+  writeToFile(`Request received at: ${new Date().toISOString()}`);
+  writeToFile(`Request method: ${req.method}`);
+  writeToFile(`Request URL: ${req.url}`);
+  
   res.status(200).json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -140,6 +147,13 @@ app.get('/health', (req, res) => {
 app.get('/api/health', (req, res) => {
   console.log('=== AZURE HEALTH CHECK ===');
   logger.info('=== AZURE HEALTH CHECK ===');
+  
+  // Write to file as backup
+  writeToFile('AZURE HEALTH CHECK ENDPOINT CALLED');
+  writeToFile(`Request received at: ${new Date().toISOString()}`);
+  writeToFile(`Request method: ${req.method}`);
+  writeToFile(`Request URL: ${req.url}`);
+  
   res.status(200).json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -170,6 +184,14 @@ app.get('/logs', (req, res) => {
 // endpoint
 app.post('/webhook', (req, res) => {
   try {
+    // Write to file as backup
+    writeToFile('WEBHOOK ENDPOINT CALLED');
+    writeToFile(`Request received at: ${new Date().toISOString()}`);
+    writeToFile(`Request method: ${req.method}`);
+    writeToFile(`Request URL: ${req.url}`);
+    writeToFile(`Request headers: ${JSON.stringify(req.headers)}`);
+    writeToFile(`Request body: ${JSON.stringify(req.body)}`);
+    
     // Log raw headers
     logger.info({
       message: '=== WEBHOOK REQUEST HEADERS ===',
@@ -207,6 +229,7 @@ app.post('/webhook', (req, res) => {
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
     logger.error('Error processing webhook:', error);
+    writeToFile(`WEBHOOK ERROR: ${error.message}`);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -214,6 +237,14 @@ app.post('/webhook', (req, res) => {
 // endpoint
 app.post('/AssetAlert', (req, res) => {
   try {
+    // Write to file as backup
+    writeToFile('ASSET ALERT ENDPOINT CALLED');
+    writeToFile(`Request received at: ${new Date().toISOString()}`);
+    writeToFile(`Request method: ${req.method}`);
+    writeToFile(`Request URL: ${req.url}`);
+    writeToFile(`Request headers: ${JSON.stringify(req.headers)}`);
+    writeToFile(`Request body: ${JSON.stringify(req.body)}`);
+    
     // Log raw headers
     logger.info({
       message: '=== WEBHOOK REQUEST HEADERS ASSET ALERT ===',
@@ -251,6 +282,7 @@ app.post('/AssetAlert', (req, res) => {
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
     logger.error('Error processing webhook:', error);
+    writeToFile(`ASSET ALERT ERROR: ${error.message}`);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
