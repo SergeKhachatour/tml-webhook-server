@@ -51,12 +51,45 @@ function writeToFile(message) {
   }
 }
 
+// Azure-compatible logging function
+function azureLog(level, message, data = {}) {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    message,
+    data,
+    pid: process.pid,
+    hostname: process.env.WEBSITE_HOSTNAME || 'unknown'
+  };
+  
+  // Write to Azure's expected log format
+  console.log(JSON.stringify(logEntry));
+  
+  // Also write to our file for backup
+  writeToFile(`${level.toUpperCase()}: ${message}`);
+  
+  // Write to stderr for errors (Azure captures this)
+  if (level === 'error') {
+    console.error(JSON.stringify(logEntry));
+  }
+}
+
 const app = express();
 // Azure Web Apps use PORT environment variable, but let's use 8080 explicitly
 // to avoid conflicts with Azure's internal processes
 const port = 8080;
 
 // Log startup information
+azureLog('info', 'Starting TML Webhook Server...', {
+  nodeVersion: process.version,
+  port: port,
+  nodeEnv: process.env.NODE_ENV || 'development',
+  pid: process.pid,
+  platform: process.platform,
+  arch: process.arch
+});
+
 console.log('Starting TML Webhook Server...');
 console.error('Starting TML Webhook Server (stderr)...');
 process.stdout.write('Starting TML Webhook Server (stdout)...\n');
@@ -103,6 +136,15 @@ app.get('/', (req, res) => {
 
 // Simple ping endpoint for Azure
 app.get('/ping', (req, res) => {
+  azureLog('info', 'PING ENDPOINT CALLED', {
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+  
+  // Also keep existing logging for compatibility
   console.log('=== PING ENDPOINT ===');
   console.error('=== PING ENDPOINT ERROR STREAM ===');
   process.stdout.write('=== PING ENDPOINT STDOUT ===\n');
@@ -126,6 +168,14 @@ app.get('/ping', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  azureLog('info', 'HEALTH CHECK ENDPOINT CALLED', {
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+  
   console.log('=== HEALTH CHECK ===');
   logger.info('=== HEALTH CHECK ===');
   
@@ -145,6 +195,14 @@ app.get('/health', (req, res) => {
 
 // Azure Web App health check endpoint
 app.get('/api/health', (req, res) => {
+  azureLog('info', 'AZURE HEALTH CHECK ENDPOINT CALLED', {
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+  
   console.log('=== AZURE HEALTH CHECK ===');
   logger.info('=== AZURE HEALTH CHECK ===');
   
@@ -184,6 +242,17 @@ app.get('/logs', (req, res) => {
 // endpoint
 app.post('/webhook', (req, res) => {
   try {
+    azureLog('info', 'WEBHOOK ENDPOINT CALLED', {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      body: req.body,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      contentType: req.get('Content-Type'),
+      contentLength: req.get('Content-Length')
+    });
+    
     // Write to file as backup
     writeToFile('WEBHOOK ENDPOINT CALLED');
     writeToFile(`Request received at: ${new Date().toISOString()}`);
@@ -228,6 +297,7 @@ app.post('/webhook', (req, res) => {
     
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
+    azureLog('error', 'WEBHOOK ERROR', { error: error.message, stack: error.stack });
     logger.error('Error processing webhook:', error);
     writeToFile(`WEBHOOK ERROR: ${error.message}`);
     res.status(500).json({ error: 'Internal server error' });
@@ -237,6 +307,17 @@ app.post('/webhook', (req, res) => {
 // endpoint
 app.post('/AssetAlert', (req, res) => {
   try {
+    azureLog('info', 'ASSET ALERT ENDPOINT CALLED', {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      body: req.body,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      contentType: req.get('Content-Type'),
+      contentLength: req.get('Content-Length')
+    });
+    
     // Write to file as backup
     writeToFile('ASSET ALERT ENDPOINT CALLED');
     writeToFile(`Request received at: ${new Date().toISOString()}`);
@@ -281,6 +362,7 @@ app.post('/AssetAlert', (req, res) => {
     
     res.status(200).json({ message: 'Webhook received successfully' });
   } catch (error) {
+    azureLog('error', 'ASSET ALERT ERROR', { error: error.message, stack: error.stack });
     logger.error('Error processing webhook:', error);
     writeToFile(`ASSET ALERT ERROR: ${error.message}`);
     res.status(500).json({ error: 'Internal server error' });
