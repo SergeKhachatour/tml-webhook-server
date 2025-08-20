@@ -49,6 +49,37 @@ app.post('/webhook', (req, res) => {
       message: '=== PROCESSED WEBHOOK DATA ===',
       webhookData: webhookData
     });
+
+app.post('/AssetAlert', (req, res) => {
+  try {
+    // Log raw headers
+    logger.info({
+      message: '=== WEBHOOK REQUEST HEADERS ASSET ALERT ===',
+      headers: req.headers
+    });
+    
+    // Log raw body
+    logger.info({
+      message: '=== WEBHOOK REQUEST BODY ASSET ALERT ===',
+      body: req.body
+    });
+    
+    // Log additional request details
+    logger.info({
+      message: '=== WEBHOOK REQUEST DETAILS ASSET ALERT ===',
+      method: req.method,
+      url: req.url,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      contentType: req.get('Content-Type'),
+      contentLength: req.get('Content-Length')
+    });
+    
+    const webhookData = req.body;
+    logger.info({
+      message: '=== PROCESSED WEBHOOK DATA ASSET ALERT ===',
+      webhookData: webhookData
+    });  
     
     // Send to Unity 3D application
 
