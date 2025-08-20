@@ -38,6 +38,19 @@ console.log('=== helmet loaded ===');
 const { logger } = require('./utils/logger');
 console.log('=== logger loaded ===');
 
+// Add simple file logging as backup
+const fs = require('fs');
+const path = require('path');
+
+function writeToFile(message) {
+  try {
+    const logMessage = `${new Date().toISOString()}: ${message}\n`;
+    fs.appendFileSync('/tmp/app.log', logMessage);
+  } catch (error) {
+    console.error('Failed to write to log file:', error);
+  }
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -85,6 +98,19 @@ app.get('/ping', (req, res) => {
   process.stdout.write('=== PING ENDPOINT STDOUT ===\n');
   process.stderr.write('=== PING ENDPOINT STDERR ===\n');
   logger.info('=== PING ENDPOINT ===');
+  
+  // Add more comprehensive logging for testing
+  console.log('Request received at:', new Date().toISOString());
+  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Request method:', req.method);
+  console.log('Request URL:', req.url);
+  
+  // Write to file as backup
+  writeToFile('PING ENDPOINT CALLED');
+  writeToFile(`Request received at: ${new Date().toISOString()}`);
+  writeToFile(`Request method: ${req.method}`);
+  writeToFile(`Request URL: ${req.url}`);
+  
   res.status(200).send('pong');
 });
 
@@ -110,6 +136,24 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     memory: process.memoryUsage()
   });
+});
+
+// Log viewer endpoint
+app.get('/logs', (req, res) => {
+  try {
+    const logContent = fs.readFileSync('/tmp/app.log', 'utf8');
+    res.status(200).json({
+      message: 'Log file contents',
+      logs: logContent,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(200).json({
+      message: 'No log file found or error reading logs',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // endpoint
