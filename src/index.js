@@ -1,3 +1,14 @@
+// Add uncaught exception handlers first
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -11,13 +22,23 @@ const port = process.env.PORT || 3000;
 logger.info('Starting TML Webhook Server...', {
   nodeVersion: process.version,
   port: port,
-  nodeEnv: process.env.NODE_ENV || 'development'
+  nodeEnv: process.env.NODE_ENV || 'development',
+  pid: process.pid,
+  platform: process.platform,
+  arch: process.arch
 });
 
 
+logger.info('Configuring middleware...');
+
 app.use(helmet());
+logger.info('Helmet middleware configured');
+
 app.use(cors());
+logger.info('CORS middleware configured');
+
 app.use(express.json());
+logger.info('JSON middleware configured');
 
 // Root endpoint
 app.get('/', (req, res) => {
