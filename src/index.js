@@ -21,26 +21,22 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-try {
-  console.log('=== LOADING DEPENDENCIES ===');
-  require('dotenv').config();
-  console.log('=== dotenv loaded ===');
-  
-  const express = require('express');
-  console.log('=== express loaded ===');
-  
-  const cors = require('cors');
-  console.log('=== cors loaded ===');
-  
-  const helmet = require('helmet');
-  console.log('=== helmet loaded ===');
-  
-  const { logger } = require('./utils/logger');
-  console.log('=== logger loaded ===');
-} catch (error) {
-  console.error('=== ERROR LOADING DEPENDENCIES ===', error);
-  process.exit(1);
-}
+// Load dependencies
+console.log('=== LOADING DEPENDENCIES ===');
+require('dotenv').config();
+console.log('=== dotenv loaded ===');
+
+const express = require('express');
+console.log('=== express loaded ===');
+
+const cors = require('cors');
+console.log('=== cors loaded ===');
+
+const helmet = require('helmet');
+console.log('=== helmet loaded ===');
+
+const { logger } = require('./utils/logger');
+console.log('=== logger loaded ===');
 
 const app = express();
 const port = process.env.PORT || 3000;
