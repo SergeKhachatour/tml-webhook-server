@@ -151,7 +151,8 @@ app.get('/logs', (req, res) => {
     res.status(200).json({
       message: 'No log file found or error reading logs',
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      note: 'This is a test deployment to resolve 409 conflict'
     });
   }
 });
