@@ -52,7 +52,8 @@ function writeToFile(message) {
 }
 
 const app = express();
-const port = process.env.PORT || 3000;
+// Use Azure's expected port 8080, fallback to PORT env var, then 3000
+const port = process.env.APPSETTING_PORT || process.env.PORT || 8080;
 
 // Log startup information
 console.log('Starting TML Webhook Server...');
