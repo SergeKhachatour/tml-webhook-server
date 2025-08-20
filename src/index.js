@@ -50,6 +50,19 @@ app.post('/webhook', (req, res) => {
       webhookData: webhookData
     });
 
+  
+    
+    // Send to Unity 3D application
+
+    
+    res.status(200).json({ message: 'Webhook received successfully' });
+  } catch (error) {
+    logger.error('Error processing webhook:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// endpoint
 app.post('/AssetAlert', (req, res) => {
   try {
     // Log raw headers
@@ -79,7 +92,9 @@ app.post('/AssetAlert', (req, res) => {
     logger.info({
       message: '=== PROCESSED WEBHOOK DATA ASSET ALERT ===',
       webhookData: webhookData
-    });  
+    });
+
+  
     
     // Send to Unity 3D application
 
