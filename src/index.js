@@ -26,20 +26,26 @@ console.log('=== LOADING DEPENDENCIES ===');
 require('dotenv').config();
 console.log('=== dotenv loaded ===');
 
-// Initialize Application Insights for Azure logging
-const appInsights = require('applicationinsights');
-appInsights.setup()
-  .setAutoDependencyCorrelation(true)
-  .setAutoCollectRequests(true)
-  .setAutoCollectPerformance(true)
-  .setAutoCollectExceptions(true)
-  .setAutoCollectDependencies(true)
-  .setAutoCollectConsole(true)
-  .setUseDiskRetryCaching(true)
-  .start();
+// Initialize Application Insights for Azure logging (optional)
+let client = null;
+try {
+  const appInsights = require('applicationinsights');
+  appInsights.setup()
+    .setAutoDependencyCorrelation(true)
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .setAutoCollectConsole(true)
+    .setUseDiskRetryCaching(true)
+    .start();
 
-const client = appInsights.defaultClient;
-console.log('=== Application Insights initialized ===');
+  client = appInsights.defaultClient;
+  console.log('=== Application Insights initialized ===');
+} catch (error) {
+  console.log('=== Application Insights not available (continuing without it) ===');
+  console.log('Error:', error.message);
+}
 
 const express = require('express');
 console.log('=== express loaded ===');
@@ -89,12 +95,16 @@ function azureLog(level, message, data = {}) {
     console.error(JSON.stringify(logEntry));
   }
   
-  // Send to Application Insights
-  if (client) {
-    if (level === 'error') {
-      client.trackException({ exception: new Error(message), properties: data });
-    } else {
-      client.trackTrace({ message: message, severity: level, properties: data });
+  // Send to Application Insights (only if available)
+  if (client && client.trackTrace) {
+    try {
+      if (level === 'error') {
+        client.trackException({ exception: new Error(message), properties: data });
+      } else {
+        client.trackTrace({ message: message, severity: level, properties: data });
+      }
+    } catch (error) {
+      console.log('Application Insights logging failed:', error.message);
     }
   }
 }
