@@ -20,6 +20,10 @@ const port = process.env.PORT || 3000;
 
 // Log startup information
 console.log('Starting TML Webhook Server...');
+console.error('Starting TML Webhook Server (stderr)...');
+process.stdout.write('Starting TML Webhook Server (stdout)...\n');
+process.stderr.write('Starting TML Webhook Server (stderr)...\n');
+
 logger.info('Starting TML Webhook Server...', {
   nodeVersion: process.version,
   port: port,
@@ -54,6 +58,9 @@ app.get('/', (req, res) => {
 // Simple ping endpoint for Azure
 app.get('/ping', (req, res) => {
   console.log('=== PING ENDPOINT ===');
+  console.error('=== PING ENDPOINT ERROR STREAM ===');
+  process.stdout.write('=== PING ENDPOINT STDOUT ===\n');
+  process.stderr.write('=== PING ENDPOINT STDERR ===\n');
   logger.info('=== PING ENDPOINT ===');
   res.status(200).send('pong');
 });
