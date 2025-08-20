@@ -1,26 +1,16 @@
 const winston = require('winston');
 
+// Simple console transport for Azure Web Apps
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.simple()
   ),
   transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
+    new winston.transports.Console()
   ]
 });
-
-// Add file transports only if not in production (Azure Web Apps)
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.File({ filename: 'error.log', level: 'error' }));
-  logger.add(new winston.transports.File({ filename: 'combined.log' }));
-}
 
 module.exports = { logger }; 

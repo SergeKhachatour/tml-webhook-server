@@ -149,8 +149,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+logger.info('Starting server...', { port: port });
+
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
+  logger.info('Application startup completed successfully');
 }).on('error', (err) => {
   logger.error('Failed to start server:', err);
   process.exit(1);
