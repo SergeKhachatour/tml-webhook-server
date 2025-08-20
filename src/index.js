@@ -1,3 +1,15 @@
+// Very first line - test if file is being executed
+console.log('=== FILE EXECUTION STARTED ===');
+console.error('=== FILE EXECUTION STARTED (stderr) ===');
+process.stdout.write('=== FILE EXECUTION STARTED (stdout) ===\n');
+process.stderr.write('=== FILE EXECUTION STARTED (stderr) ===\n');
+
+// Simple test logging first
+console.log('=== APPLICATION STARTING ===');
+console.error('=== APPLICATION STARTING (stderr) ===');
+process.stdout.write('=== APPLICATION STARTING (stdout) ===\n');
+process.stderr.write('=== APPLICATION STARTING (stderr) ===\n');
+
 // Add uncaught exception handlers first
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
@@ -9,11 +21,26 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const { logger } = require('./utils/logger');
+try {
+  console.log('=== LOADING DEPENDENCIES ===');
+  require('dotenv').config();
+  console.log('=== dotenv loaded ===');
+  
+  const express = require('express');
+  console.log('=== express loaded ===');
+  
+  const cors = require('cors');
+  console.log('=== cors loaded ===');
+  
+  const helmet = require('helmet');
+  console.log('=== helmet loaded ===');
+  
+  const { logger } = require('./utils/logger');
+  console.log('=== logger loaded ===');
+} catch (error) {
+  console.error('=== ERROR LOADING DEPENDENCIES ===', error);
+  process.exit(1);
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
