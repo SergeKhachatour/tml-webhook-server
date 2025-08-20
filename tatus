@@ -1,0 +1,78 @@
+[1mdiff --git a/src/index.js b/src/index.js[m
+[1mindex 9ff4a5b..cf964b0 100644[m
+[1m--- a/src/index.js[m
+[1m+++ b/src/index.js[m
+[36m@@ -128,6 +128,13 @@[m [mapp.get('/ping', (req, res) => {[m
+ app.get('/health', (req, res) => {[m
+   console.log('=== HEALTH CHECK ===');[m
+   logger.info('=== HEALTH CHECK ===');[m
+[32m+[m[41m  [m
+[32m+[m[32m  // Write to file as backup[m
+[32m+[m[32m  writeToFile('HEALTH CHECK ENDPOINT CALLED');[m
+[32m+[m[32m  writeToFile(`Request received at: ${new Date().toISOString()}`);[m
+[32m+[m[32m  writeToFile(`Request method: ${req.method}`);[m
+[32m+[m[32m  writeToFile(`Request URL: ${req.url}`);[m
+[32m+[m[41m  [m
+   res.status(200).json({ [m
+     status: 'healthy',[m
+     timestamp: new Date().toISOString(),[m
+[36m@@ -140,6 +147,13 @@[m [mapp.get('/health', (req, res) => {[m
+ app.get('/api/health', (req, res) => {[m
+   console.log('=== AZURE HEALTH CHECK ===');[m
+   logger.info('=== AZURE HEALTH CHECK ===');[m
+[32m+[m[41m  [m
+[32m+[m[32m  // Write to file as backup[m
+[32m+[m[32m  writeToFile('AZURE HEALTH CHECK ENDPOINT CALLED');[m
+[32m+[m[32m  writeToFile(`Request received at: ${new Date().toISOString()}`);[m
+[32m+[m[32m  writeToFile(`Request method: ${req.method}`);[m
+[32m+[m[32m  writeToFile(`Request URL: ${req.url}`);[m
+[32m+[m[41m  [m
+   res.status(200).json({ [m
+     status: 'healthy',[m
+     timestamp: new Date().toISOString(),[m
+[36m@@ -170,6 +184,14 @@[m [mapp.get('/logs', (req, res) => {[m
+ // endpoint[m
+ app.post('/webhook', (req, res) => {[m
+   try {[m
+[32m+[m[32m    // Write to file as backup[m
+[32m+[m[32m    writeToFile('WEBHOOK ENDPOINT CALLED');[m
+[32m+[m[32m    writeToFile(`Request received at: ${new Date().toISOString()}`);[m
+[32m+[m[32m    writeToFile(`Request method: ${req.method}`);[m
+[32m+[m[32m    writeToFile(`Request URL: ${req.url}`);[m
+[32m+[m[32m    writeToFile(`Request headers: ${JSON.stringify(req.headers)}`);[m
+[32m+[m[32m    writeToFile(`Request body: ${JSON.stringify(req.body)}`);[m
+[32m+[m[41m    [m
+     // Log raw headers[m
+     logger.info({[m
+       message: '=== WEBHOOK REQUEST HEADERS ===',[m
+[36m@@ -207,6 +229,7 @@[m [mapp.post('/webhook', (req, res) => {[m
+     res.status(200).json({ message: 'Webhook received successfully' });[m
+   } catch (error) {[m
+     logger.error('Error processing webhook:', error);[m
+[32m+[m[32m    writeToFile(`WEBHOOK ERROR: ${error.message}`);[m
+     res.status(500).json({ error: 'Internal server error' });[m
+   }[m
+ });[m
+[36m@@ -214,6 +237,14 @@[m [mapp.post('/webhook', (req, res) => {[m
+ // endpoint[m
+ app.post('/AssetAlert', (req, res) => {[m
+   try {[m
+[32m+[m[32m    // Write to file as backup[m
+[32m+[m[32m    writeToFile('ASSET ALERT ENDPOINT CALLED');[m
+[32m+[m[32m    writeToFile(`Request received at: ${new Date().toISOString()}`);[m
+[32m+[m[32m    writeToFile(`Request method: ${req.method}`);[m
+[32m+[m[32m    writeToFile(`Request URL: ${req.url}`);[m
+[32m+[m[32m    writeToFile(`Request headers: ${JSON.stringify(req.headers)}`);[m
+[32m+[m[32m    writeToFile(`Request body: ${JSON.stringify(req.body)}`);[m
+[32m+[m[41m    [m
+     // Log raw headers[m
+     logger.info({[m
+       message: '=== WEBHOOK REQUEST HEADERS ASSET ALERT ===',[m
+[36m@@ -251,6 +282,7 @@[m [mapp.post('/AssetAlert', (req, res) => {[m
+     res.status(200).json({ message: 'Webhook received successfully' });[m
+   } catch (error) {[m
+     logger.error('Error processing webhook:', error);[m
+[32m+[m[32m    writeToFile(`ASSET ALERT ERROR: ${error.message}`);[m
+     res.status(500).json({ error: 'Internal server error' });[m
+   }[m
+ });[m
