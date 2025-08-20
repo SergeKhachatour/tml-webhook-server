@@ -52,9 +52,9 @@ function writeToFile(message) {
 }
 
 const app = express();
-// Azure Web Apps use PORT environment variable, which should be 8080
-// But sometimes Azure sets it to 8181, so we need to be explicit
-const port = process.env.PORT || 8080;
+// Azure Web Apps use PORT environment variable, but let's use 8080 explicitly
+// to avoid conflicts with Azure's internal processes
+const port = 8080;
 
 // Log startup information
 console.log('Starting TML Webhook Server...');
