@@ -19,6 +19,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Log startup information
+console.log('Starting TML Webhook Server...');
 logger.info('Starting TML Webhook Server...', {
   nodeVersion: process.version,
   port: port,
@@ -52,11 +53,14 @@ app.get('/', (req, res) => {
 
 // Simple ping endpoint for Azure
 app.get('/ping', (req, res) => {
+  console.log('=== PING ENDPOINT ===');
+  logger.info('=== PING ENDPOINT ===');
   res.status(200).send('pong');
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  console.log('=== HEALTH CHECK ===');
   logger.info('=== HEALTH CHECK ===');
   res.status(200).json({ 
     status: 'healthy',
@@ -68,6 +72,7 @@ app.get('/health', (req, res) => {
 
 // Azure Web App health check endpoint
 app.get('/api/health', (req, res) => {
+  console.log('=== AZURE HEALTH CHECK ===');
   logger.info('=== AZURE HEALTH CHECK ===');
   res.status(200).json({ 
     status: 'healthy',
@@ -171,12 +176,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+console.log('Starting server...');
 logger.info('Starting server...', { port: port });
 
 app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+  console.log('Application startup completed successfully');
   logger.info(`Server is running on port ${port}`);
   logger.info('Application startup completed successfully');
 }).on('error', (err) => {
+  console.error('Failed to start server:', err);
   logger.error('Failed to start server:', err);
   process.exit(1);
 });
