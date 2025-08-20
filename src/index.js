@@ -60,6 +60,14 @@ console.error('Starting TML Webhook Server (stderr)...');
 process.stdout.write('Starting TML Webhook Server (stdout)...\n');
 process.stderr.write('Starting TML Webhook Server (stderr)...\n');
 
+// Log environment variables for debugging
+console.log('Environment variables:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('WEBSITE_SITE_NAME:', process.env.WEBSITE_SITE_NAME);
+console.log('WEBSITE_INSTANCE_ID:', process.env.WEBSITE_INSTANCE_ID);
+console.log('WEBSITE_HOSTNAME:', process.env.WEBSITE_HOSTNAME);
+
 logger.info('Starting TML Webhook Server...', {
   nodeVersion: process.version,
   port: port,
